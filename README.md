@@ -1,6 +1,6 @@
-# gitdown
+# gitload
 
-Gitdown is a Rust library for downloading specific folders from GitHub repositories.
+Gitload is a Rust library for downloading specific folders from GitHub repositories.
 
 ## usage
 
