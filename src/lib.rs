@@ -88,7 +88,10 @@ impl FileTree {
                 send_if_err!(
                     tx,
                     downloader
-                        .download_single(path.as_os_str().to_str().unwrap(), dst.to_str().unwrap())
+                        .download_single(
+                            path.as_os_str().to_str().unwrap(),
+                            dst.to_str().unwrap().trim_end_matches("/")
+                        )
                         .await
                 );
                 let mut lock = process.lock().unwrap();

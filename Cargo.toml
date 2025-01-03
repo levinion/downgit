@@ -2,6 +2,8 @@
 name = "gitload"
 version = "0.1.0"
 edition = "2021"
+description = "download any single file or dir from github"
+license = "MIT"
 
 [dependencies]
 anyhow = "1.0.82"
