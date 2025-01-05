@@ -1,6 +1,6 @@
 [package]
 name = "gitload"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "download any single file or dir from github"
 license = "MIT"

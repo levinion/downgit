@@ -1,7 +1,7 @@
 use std::{
     fs::{create_dir_all, File},
     io::Write,
-    path::PathBuf,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
 
@@ -82,6 +82,10 @@ impl FileTree {
             let downloader = downloader.clone();
             let process = process.clone();
             tokio::spawn(async move {
+                // src is remote path, such as nvim/init.lua
+                // dst is local path such as src
+                // path is the exact remote path, on the situation of single file, path equals with src
+                // the final dst is the download path, such as src/init.lua
                 let dst = dst.join(path.strip_prefix(&src).unwrap());
                 let dst_dir = dst.parent().unwrap();
                 create_dir_all(dst_dir).unwrap();
@@ -182,7 +186,10 @@ impl DownloaderBuilder {
     }
 
     pub fn local_path(mut self, local: &str) -> Self {
-        self.local_path = Some(local.into());
+        let remote = PathBuf::from(&self.remote_path);
+        let name = remote.file_name().unwrap().to_str().unwrap().to_string();
+        let local = PathBuf::from(local);
+        self.local_path = Some(local.join(name).to_str().unwrap().to_string());
         self
     }
 
