@@ -1,7 +1,7 @@
 use std::{
     fs::{create_dir_all, File},
     io::Write,
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
@@ -141,8 +141,9 @@ impl Downloader {
         let client = reqwest::ClientBuilder::new()
             .user_agent(Self::USER_AGENT)
             .build()?;
-        let res = client.get(url).send().await?.text().await?;
-        let file_tree: FileTree = serde_json::from_str(&res)?;
+        let res = client.get(url).send().await.unwrap().text().await.unwrap();
+        let file_tree: FileTree = serde_json::from_str(&res)
+            .map_err(|_| anyhow!("Are you sure the repo really exists?"))?;
 
         let (tx, mut rx) = channel::<Result<Process, String>>(5);
 
@@ -151,7 +152,11 @@ impl Downloader {
         file_tree.download(me.clone(), tx).await;
 
         loop {
-            let process = rx.recv().await?.map_err(|err| anyhow!(err))?;
+            let process = rx
+                .recv()
+                .await
+                .map_err(|_| anyhow!("Are you sure the target name is right?"))?
+                .unwrap();
             (me.process_handler)(process);
             if process.is_over() {
                 return Ok(());
